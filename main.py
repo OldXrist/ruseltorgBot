@@ -16,13 +16,13 @@ solver = TwoCaptcha(**config)
 
 
 def edit_application(procedure_number, quantity):
-    path_to_doc = os.getcwd().replace('\\', '/') + '/docs-2/Заявка Право-Торг.docx'
+    path_to_doc = os.getcwd().replace('\\', '/') + '/docs-2/Заявка Митра.docx'
     doc = docx.Document(path_to_doc)
     price = str(int(quantity.split('.')[0]) * 0.01)
 
     doc.paragraphs[2].runs[2].text = procedure_number
     doc.paragraphs[9].runs[1].text = procedure_number
-    doc.paragraphs[9].runs[6].text = price
+    doc.paragraphs[9].runs[3].text = price
     doc.paragraphs[11].runs[1].text = quantity.split('.')[0]
 
     doc.save(path_to_doc)
@@ -82,15 +82,15 @@ def read_new_captcha(driver, main_w, captcha_w):
 
 def main(driver, main_w, captcha_w):
 
-    get_captcha_sync(driver, main_w, captcha_w)
+    #get_captcha_sync(driver, main_w, captcha_w)
     while True:
         if driver.find_elements(By.CSS_SELECTOR, "#captcha_img"):
-            fill_captcha(driver, main_w, captcha_w)
+            #fill_captcha(driver, main_w, captcha_w)
             time.sleep(1)
         else:
             break
 
-    read_new_captcha(driver, main_w, captcha_w)
+    #read_new_captcha(driver, main_w, captcha_w)
 
     if driver.find_element(By.ID, "ext-gen232"):
         driver.find_element(By.ID, "ext-gen232").click()
@@ -110,8 +110,8 @@ def main(driver, main_w, captcha_w):
     while True:
         while True:
             if driver.find_elements(By.CSS_SELECTOR, "#captcha_img"):
-                read_new_captcha(driver, main_w, captcha_w)
-                fill_captcha(driver, main_w, captcha_w)
+                #read_new_captcha(driver, main_w, captcha_w)
+                #fill_captcha(driver, main_w, captcha_w)
                 time.sleep(1)
             else:
                 break
@@ -132,10 +132,14 @@ def main(driver, main_w, captcha_w):
             driver.execute_script("document.getElementById('ext-gen300').click()")
             time.sleep(3)
 
-    time.sleep(5)
+    while True:
+        if driver.find_elements(By.CSS_SELECTOR, ".x-grid3-col-4"):
+            quantity = driver.find_elements(By.CSS_SELECTOR, ".x-grid3-col-4")[0].get_attribute('innerHTML')
+            tr_list = driver.find_elements(By.CSS_SELECTOR, "tr")
+            break
+        else:
+            time.sleep(0.5)
 
-    quantity = driver.find_elements(By.CSS_SELECTOR, ".x-grid3-col-4")[0].get_attribute('innerHTML')
-    tr_list = driver.find_elements(By.CSS_SELECTOR, "tr")
     for i in range(len(tr_list)):
         if 'Закупка №:' in tr_list[i].get_attribute('innerText'):
             trade_number = tr_list[i].find_elements(By.CSS_SELECTOR, "a")[0].get_attribute('innerText')
@@ -153,7 +157,7 @@ def main(driver, main_w, captcha_w):
         driver.execute_script("document.getElementById('declaration_check_text').click()")
 
     if driver.find_elements(By.CSS_SELECTOR, "#acct_ras"):
-        driver.find_element(By.ID, "acct_ras").send_keys("40702810026070002060")
+        driver.find_element(By.ID, "acct_ras").send_keys("40702810326270000287")
 
     if driver.find_elements(By.CSS_SELECTOR, "#acct_kor"):
         driver.find_element(By.ID, "acct_kor").send_keys("30101810500000000207")
@@ -176,7 +180,7 @@ def main(driver, main_w, captcha_w):
         permissionField = driver.find_element(By.CSS_SELECTOR, "#files_maxsum_panel_i")
         if permissionField.find_elements(By.CSS_SELECTOR, ".x-form-file"):
             file = permissionField.find_elements(By.CSS_SELECTOR, ".x-form-file")[0]
-            file.send_keys(os.getcwd().replace('\\', '/') + "/docs-1/Об одобрении крупнои сделки.pdf")
+            file.send_keys(os.getcwd().replace('\\', '/') + "/docs-1/Об одобрении крупной сделки.pdf")
 
     if driver.find_elements(By.CSS_SELECTOR, "#contract_price_offer"):
         driver.find_element(By.ID, "contract_price_offer").send_keys(int(quantity.split('.')[0]) * 0.01)
@@ -208,7 +212,6 @@ if __name__ == '__main__':
     chromeDriver = webdriver.Chrome(options=options)
     mainWindow = chromeDriver.window_handles[0]
     chromeDriver.get("https://etp.roseltorg.ru/supplier/auction/index")
-    #  time.sleep(5000)  # для входа в аккаунт
     chromeDriver.execute_script("window.open('about:blank', 'captchaWindow');")
     time.sleep(1)
     captchaWindow = chromeDriver.window_handles[1]
