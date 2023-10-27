@@ -16,7 +16,7 @@ solver = TwoCaptcha(**config)
 
 
 def edit_application(procedure_number, quantity):
-    path_to_doc = os.getcwd().replace('\\', '/') + '/docs-2/Заявка Актив.docx'
+    path_to_doc = os.getcwd().replace('\\', '/') + '/docs-2/Заявка Право-Торг.docx'
     doc = docx.Document(path_to_doc)
     price = str(int(quantity.split('.')[0]) * 0.01)
 
